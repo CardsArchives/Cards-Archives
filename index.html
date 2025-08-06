@@ -1333,25 +1333,25 @@
 
         // Custom alert system
         function showCustomAlert(message) {
-            // Create a temporary alert modal
-            const alertModal = document.createElement('div');
-            alertModal.className = 'modal';
-            alertModal.innerHTML = `
-                <div class="modal-content" style="max-width: 400px;">
-                    <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Notice</h2>
-                    <p style="margin-bottom: 2rem; color: #9CA3AF;">${message}</p>
-                    <button onclick="this.closest('.modal').remove()" class="btn btn-primary" style="width: 100%;">OK</button>
-                </div>
-            `;
-            document.body.appendChild(alertModal);
-            
-            // Auto-remove after 10 seconds
-            setTimeout(() => {
-                if (alertModal.parentNode) {
-                    alertModal.remove();
-                }
-            }, 10000);
+    const alertModal = document.createElement('div');
+    alertModal.className = 'modal';
+    alertModal.style.zIndex = 5000;  // 🔥 ici le fix
+    alertModal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Notice</h2>
+            <p style="margin-bottom: 2rem; color: #9CA3AF;">${message}</p>
+            <button onclick="this.closest('.modal').remove()" class="btn btn-primary" style="width: 100%;">OK</button>
+        </div>
+    `;
+    document.body.appendChild(alertModal);
+
+    setTimeout(() => {
+        if (alertModal.parentNode) {
+            alertModal.remove();
         }
+    }, 10000);
+}
+
 
 
         let viewCardData = null; // stocke la carte affichée
