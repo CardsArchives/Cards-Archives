@@ -1465,11 +1465,6 @@ function openViewModal(id) {
     document.getElementById('viewCardModal').classList.remove('hidden');
 }
 
-function closeViewModal() {
-    document.getElementById('viewCardModal').classList.add('hidden');
-    if (window.viewChartInstance) window.viewChartInstance.destroy();
-}
-
         // Initialize app on page load
         document.addEventListener('DOMContentLoaded', init);
     </script>
