@@ -146,33 +146,6 @@
         overflow-wrap: break-word;
     }
 
-    .card-details {
-        display: none;
-        margin-top: 0.5rem;
-    }
-
-    .card.show-details .card-details {
-        display: block;
-    }
-
-    .card-title,
-    .card-info,
-    .card .flex {
-        display: none;
-    }
-
-    .card.show-details .card-title,
-    .card.show-details .card-info,
-    .card.show-details .flex {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .card.show-details .card-title,
-    .card.show-details .card-info {
-        display: block;
-    }
-
     .modal {
         position: fixed;
         top: 0;
@@ -295,10 +268,44 @@
         font-family: monospace;
         font-size: 0.8rem;
         white-space: pre-wrap;
-        word-break: break-all;
+        word-break: break-word;
         max-height: 300px;
         overflow-y: auto;
         margin: 1rem 0;
+    }
+
+    /* NEW: Modal for viewing card details */
+    .view-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .view-modal-content {
+        background-color: #1F2937;
+        border: 1px solid #4B5563;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        color: white;
+    }
+
+    .view-modal img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     @media (max-width: 768px) {
@@ -315,6 +322,7 @@
         }
     }
 </style>
+
 
 </head>
 <body>
@@ -1345,9 +1353,79 @@
         }
 
 
-        function toggleCardDetails(cardElement) {
-    cardElement.classList.toggle('show-details');
+        let viewCardData = null; // stocke la carte affichée
+
+function openViewModal(cardId) {
+    const cards = getCurrentCards(); // récupère la liste des cartes
+    const card = cards.find(c => c.id === cardId);
+    if (!card) return;
+
+    viewCardData = card;
+
+    // Remplir la modal
+    document.getElementById('viewCardImage').src = card.image || '';
+    document.getElementById('viewCardName').textContent = card.name || '';
+    document.getElementById('viewCardSet').textContent = card.set + ' #' + card.number;
+    document.getElementById('viewCardDetails').textContent = card.rarity + ' - ' + card.condition;
+    document.getElementById('viewCardGrade').textContent = card.isGraded ? 'Graded: ' + card.grade : '';
+
+    // Dessiner le graphique
+    if (window.viewChartInstance) {
+        window.viewChartInstance.destroy();
+    }
+
+    const ctx = document.getElementById('viewCardChart').getContext('2d');
+
+    if (card.prices && card.prices.length > 0) {
+        const sortedPrices = [...card.prices].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const labels = sortedPrices.map(p => new Date(p.date).toLocaleDateString());
+        const data = sortedPrices.map(p => parseFloat(p.price) || 0);
+
+        window.viewChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Price ($)',
+                    data: data,
+                    borderColor: 'rgb(0, 128, 255)',
+                    backgroundColor: 'rgba(0, 128, 255, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        grid: { color: '#374151' },
+                        ticks: { color: '#9CA3AF', font: { size: 10 } }
+                    },
+                    y: {
+                        grid: { color: '#374151' },
+                        ticks: {
+                            color: '#9CA3AF',
+                            font: { size: 10 },
+                            callback: value => '$' + value
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    document.getElementById('viewCardModal').classList.remove('hidden');
 }
+
+function closeViewModal() {
+    document.getElementById('viewCardModal').classList.add('hidden');
+    if (window.viewChartInstance) {
+        window.viewChartInstance.destroy();
+    }
+}
+
 
         // Initialize app on page load
         document.addEventListener('DOMContentLoaded', init);
