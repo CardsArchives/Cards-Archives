@@ -1361,12 +1361,13 @@ function openViewModal(cardId) {
     document.getElementById('viewCardDetails').textContent = card.rarity + ' - ' + card.condition;
     document.getElementById('viewCardGrade').textContent = card.isGraded ? 'Graded: ' + card.grade : '';
 
-    // Dessiner le graphique
+    const ctx = document.getElementById('viewCardChart').getContext('2d');
+
+    // Détruire le graph précédent s’il existe
     if (window.viewChartInstance) {
         window.viewChartInstance.destroy();
+        window.viewChartInstance = null;
     }
-
-    const ctx = document.getElementById('viewCardChart').getContext('2d');
 
     if (card.prices && card.prices.length > 0) {
         const sortedPrices = [...card.prices].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1406,10 +1407,15 @@ function openViewModal(cardId) {
                 }
             }
         });
+    } else {
+        // Aucun prix → nettoyer le canvas (pas de bug visuel)
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     }
 
+    // Afficher la fenêtre
     document.getElementById('viewCardModal').classList.remove('hidden');
 }
+
 
 function closeViewModal() {
     document.getElementById('viewCardModal').classList.add('hidden');
