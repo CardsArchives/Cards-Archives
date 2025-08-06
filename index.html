@@ -776,16 +776,6 @@
     <div class="card" onclick="openViewModal(${card.id})">
         ${card.image ? `<img src="${card.image}" alt="${card.name}" class="card-image" onerror="handleImageError(this)">` : ''}
         ${renderPriceChart(card)}
-        <div class="card-details">
-            <div class="card-title">${card.name}</div>
-            <div class="card-info">${card.set} #${card.number}</div>
-            <div class="card-info">${card.rarity} - ${card.condition}</div>
-            ${card.isGraded ? `<div style="color: #FCD34D; font-size: 0.9rem;">Graded: ${card.grade}</div>` : ''}
-            <div class="flex gap-4" style="margin-top: 1rem;">
-                <button onclick="event.stopPropagation(); editCard(${card.id})" class="icon-btn btn-primary">✏️</button>
-                <button onclick="event.stopPropagation(); deleteCard(${card.id})" class="icon-btn btn-danger">🗑️</button>
-            </div>
-        </div>
     </div>
 `).join('');
 
