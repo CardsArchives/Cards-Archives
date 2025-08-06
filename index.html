@@ -1036,51 +1036,60 @@
         }
 
         function saveCard() {
-            const cardData = {
-                name: document.getElementById('cardName').value.trim(),
-                set: document.getElementById('cardSet').value.trim(),
-                number: document.getElementById('cardNumber').value.trim(),
-                rarity: document.getElementById('cardRarity').value.trim(),
-                condition: document.getElementById('cardCondition').value.trim(),
-                image: appState.currentImageData || document.getElementById('cardImage').value.trim(),
-                isGraded: document.getElementById('cardIsGraded').checked,
-                grade: document.getElementById('cardGrade').value.trim(),
-                prices: [...appState.cardPrices]
-            };
+    const cardData = {
+        name: document.getElementById('cardName').value.trim(),
+        set: document.getElementById('cardSet').value.trim(),
+        number: document.getElementById('cardNumber').value.trim(),
+        rarity: document.getElementById('cardRarity').value.trim(),
+        condition: document.getElementById('cardCondition').value.trim(),
+        image: appState.currentImageData || document.getElementById('cardImage').value.trim(),
+        isGraded: document.getElementById('cardIsGraded').checked,
+        grade: document.getElementById('cardGrade').value.trim(),
+        prices: [...appState.cardPrices]
+    };
 
-            if (!cardData.name) {
-                showCustomAlert('Please enter a card name');
-                return;
-            }
+    // ✅ Vérif globale des champs requis
+    if (!cardData.name || !cardData.set || !cardData.number || !cardData.rarity ||
+        !cardData.condition || !cardData.image) {
+        showCustomAlert('❗ Please fill in all card fields.');
+        return;
+    }
 
-            if (appState.editingCard) {
-                // Update existing card
-                const cards = appState.currentCollection === 'showcase' ? 
-                    appState.showcaseCards : appState.huntlistCards;
-                const index = cards.findIndex(card => card.id === appState.editingCard.id);
-                if (index !== -1) {
-                    cards[index] = { ...appState.editingCard, ...cardData };
-                }
-            } else {
-                // Add new card
-                const newCard = {
-                    id: Date.now(),
-                    accountId: appState.currentAccount?.id,
-                    ...cardData,
-                    createdAt: new Date().toISOString()
-                };
+    // ✅ Vérif prix
+    if (!cardData.prices.length || cardData.prices.some(p => !p.date || !p.price)) {
+        showCustomAlert('❗ Please add at least one valid price.');
+        return;
+    }
 
-                if (appState.currentCollection === 'showcase') {
-                    appState.showcaseCards.push(newCard);
-                } else {
-                    appState.huntlistCards.push(newCard);
-                }
-            }
-
-            saveData();
-            hideCardForm();
-            renderCards();
+    if (appState.editingCard) {
+        // Update existing card
+        const cards = appState.currentCollection === 'showcase' ? 
+            appState.showcaseCards : appState.huntlistCards;
+        const index = cards.findIndex(card => card.id === appState.editingCard.id);
+        if (index !== -1) {
+            cards[index] = { ...appState.editingCard, ...cardData };
         }
+    } else {
+        // Add new card
+        const newCard = {
+            id: Date.now(),
+            accountId: appState.currentAccount?.id,
+            ...cardData,
+            createdAt: new Date().toISOString()
+        };
+
+        if (appState.currentCollection === 'showcase') {
+            appState.showcaseCards.push(newCard);
+        } else {
+            appState.huntlistCards.push(newCard);
+        }
+    }
+
+    saveData();
+    hideCardForm();
+    renderCards();
+}
+
 
         function editCard(cardId) {
             const cards = appState.currentCollection === 'showcase' ? 
