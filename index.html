@@ -1420,5 +1420,24 @@ function closeViewModal() {
         // Initialize app on page load
         document.addEventListener('DOMContentLoaded', init);
     </script>
+
+    <div id="viewCardModal" class="view-modal hidden" onclick="closeViewModal()">
+    <div class="view-modal-content" onclick="event.stopPropagation()">
+        <img id="viewCardImage" src="" alt="Card Image">
+        <h2 id="viewCardName" style="font-size: 1.5rem; color: rgb(0, 128, 255); margin-bottom: 0.5rem;"></h2>
+        <p id="viewCardSet" class="card-info"></p>
+        <p id="viewCardDetails" class="card-info"></p>
+        <p id="viewCardGrade" class="card-info" style="color: #FCD34D;"></p>
+        <div id="viewCardGraph" class="chart-container" style="margin-top: 1rem;">
+            <canvas id="viewCardChart"></canvas>
+        </div>
+        <div class="flex gap-4" style="margin-top: 1rem;">
+            <button onclick="event.stopPropagation(); editCard(viewCardData.id)" class="btn btn-primary" style="flex:1;">✏️ Edit</button>
+            <button onclick="event.stopPropagation(); deleteCard(viewCardData.id)" class="btn btn-danger" style="flex:1;">🗑️ Delete</button>
+        </div>
+        <button onclick="closeViewModal()" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Close</button>
+    </div>
+</div>
+    
 </body>
 </html>
