@@ -773,7 +773,7 @@
             emptyState.classList.add('hidden');
             
             cardsGrid.innerHTML = cards.map(card => `
-    <div class="card" onclick="toggleCardDetails(this)">
+    <div class="card" onclick="openViewModal(${card.id})">
         ${card.image ? `<img src="${card.image}" alt="${card.name}" class="card-image" onerror="handleImageError(this)">` : ''}
         ${renderPriceChart(card)}
         <div class="card-details">
