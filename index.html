@@ -1051,7 +1051,7 @@
     // ✅ Vérif globale des champs requis
     if (!cardData.name || !cardData.set || !cardData.number || !cardData.rarity ||
         !cardData.condition || !cardData.image) {
-        showCustomAlert('❗ Please fill in all card fields.');
+        alert('STOP : champs manquants');
         return;
     }
 
