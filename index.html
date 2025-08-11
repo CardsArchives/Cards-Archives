@@ -899,30 +899,18 @@
         }
 
         function tryDownload() {
-            const exportData = getExportData();
-            const dataStr = JSON.stringify(exportData, null, 2);
-            
-            try {
-                // Try standard download method first
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `cards-archive-${appState.currentAccount?.name}-${new Date().toISOString().split('T')[0]}.json`;
-                
-                // Try to trigger download
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                showCustomAlert('Download started! Check your downloads folder.');
-                hideExportModal();
-            } catch (error) {
-                console.log('Download failed, showing alternative options:', error);
-                showExportText();
-            }
-        }
+    const exportData = getExportData();
+    const dataStr = JSON.stringify(exportData, null, 2);
+    
+    if (typeof AndroidApp !== 'undefined') {
+        // On Android - utiliser l'interface native
+        AndroidApp.exportJson(dataStr);
+    } else {
+        // Sur PC - garder la logique normale
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        // ... ton code normal
+    }
+}
 
         // New function to trigger file save dialog
         function saveAsFile() {
@@ -1014,52 +1002,19 @@
         }
 
         // Data import
-        function importData() {
-            const file = document.getElementById('importFile').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        
-                        let importCount = 0;
-                        
-                        if (importedData.showcaseCards && Array.isArray(importedData.showcaseCards)) {
-                            // Update account IDs to current account
-                            const updatedShowcaseCards = importedData.showcaseCards.map(card => ({
-                                ...card,
-                                id: Date.now() + Math.random(), // New unique ID
-                                accountId: appState.currentAccount?.id || card.accountId
-                            }));
-                            appState.showcaseCards = [...appState.showcaseCards, ...updatedShowcaseCards];
-                            importCount += updatedShowcaseCards.length;
-                        }
-                        
-                        if (importedData.huntlistCards && Array.isArray(importedData.huntlistCards)) {
-                            // Update account IDs to current account
-                            const updatedHuntlistCards = importedData.huntlistCards.map(card => ({
-                                ...card,
-                                id: Date.now() + Math.random(), // New unique ID
-                                accountId: appState.currentAccount?.id || card.accountId
-                            }));
-                            appState.huntlistCards = [...appState.huntlistCards, ...updatedHuntlistCards];
-                            importCount += updatedHuntlistCards.length;
-                        }
-                        
-                        saveData();
-                        showCustomAlert(`Successfully imported ${importCount} cards!`);
-                        
-                        // Clear the file input
-                        document.getElementById('importFile').value = '';
-                        
-                    } catch (error) {
-                        showCustomAlert('Error importing data: Invalid file format. Please ensure it\'s a valid JSON file.');
-                        console.error('Import error:', error);
-                    }
-                };
-                reader.readAsText(file);
-            }
-        }
+        function tryDownload() {
+    const exportData = getExportData();
+    const dataStr = JSON.stringify(exportData, null, 2);
+    
+    if (typeof AndroidApp !== 'undefined') {
+        // On Android - utiliser l'interface native
+        AndroidApp.exportJson(dataStr);
+    } else {
+        // Sur PC - garder la logique normale
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        // ... ton code normal
+    }
+}
 
         // Custom alert system
         function showCustomAlert(message) {
