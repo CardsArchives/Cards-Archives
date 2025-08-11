@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cards Archives</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #000;
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: calc(100vw - 2rem);
+        width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: rgb(0, 128, 255);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: rgb(0, 100, 200);
+    }
+
+    .btn-secondary {
+        background-color: #374151;
+        color: white;
+        border: 1px solid #4B5563;
+    }
+
+    .btn-secondary:hover {
+        background-color: #4B5563;
+    }
+
+    .btn-danger {
+        background-color: #DC2626;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #B91C1C;
+    }
+
+    .input {
+        width: 100%;
+        padding: 1rem;
+        background-color: #1F2937;
+        border: 1px solid #4B5563;
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .input:focus {
+        outline: none;
+        border-color: rgb(0, 128, 255);
+    }
+
+    .title {
+        color: rgb(0, 128, 255);
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .grid {
+        display: grid;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+    .card {
+        background-color: #1F2937;
+        border: 1px solid #4B5563;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        min-width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+		position: relative;
+		z-index: 1;
+    }
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        background-color: #374151;
+    }
+
+    .card-title {
+        color: rgb(0, 128, 255);
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .card-info {
+        color: #9CA3AF;
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+	    .alert-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* 🔥 Tout devant */
+}
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+    }
+
+    .modal-content {
+        background-color: #1F2937;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .price-entry {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        align-items: center;
+    }
+
+    .price-entry input {
+        flex: 1;
+        padding: 0.5rem;
+        background-color: #374151;
+        border: 1px solid #4B5563;
+        border-radius: 0.25rem;
+        color: white;
+    }
+
+    .icon-btn {
+        padding: 0.4rem;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+
+    .flex {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .justify-between {
+        justify-content: space-between;
+    }
+
+    .items-center {
+        align-items: center;
+    }
+
+    .gap-4 {
+        gap: 1rem;
+    }
+
+    .mb-4 {
+        margin-bottom: 1rem;
+    }
+
+    .mb-8 {
+        margin-bottom: 2rem;
+    }
+
+    .mt-8 {
+        margin-top: 2rem;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .menu-card {
+        padding: 2rem;
+        border: 2px solid #4B5563;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+
+    .menu-card:hover {
+        border-color: rgb(0, 128, 255);
+    }
+
+    .chart-container {
+        width: 100%;
+        height: 80px;
+        margin: 0.5rem 0;
+        position: relative;
+    }
+
+    .export-text {
+        background-color: #374151;
+        border: 1px solid #4B5563;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        color: white;
+        font-family: monospace;
+        font-size: 0.8rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 1rem 0;
+    }
+
+    /* NEW: Modal for viewing card details */
+    .view-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .view-modal-content {
+        background-color: #1F2937;
+        border: 1px solid #4B5563;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        color: white;
+    }
+
+    .view-modal img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .card-image {
+            height: 120px;
+        }
+
+        .chart-container {
+            height: 80px;
+        }
+    }
+</style>
+
+
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen">
+            <div style="max-width: 400px; margin: 5rem auto;">
+                <h1 class="title">Cards Archives</h1>
+                
+                <div id="loginForm">
+                    <div class="form-group">
+                        <input type="text" id="loginAccountName" placeholder="Account Name" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPin" placeholder="6-digit PIN" maxlength="6" class="input">
+                    </div>
+                    <div class="form-group">
+                        <button onclick="login()" class="btn btn-primary" style="width: 100%;">Login</button>
+                    </div>
+                    <div class="form-group">
+                        <button onclick="showCreateForm()" class="btn btn-secondary" style="width: 100%;">Create New Account</button>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Import Data:</label>
+                        <input type="file" id="importFile" accept=".json" onchange="importData()" class="input">
+                    </div>
+					<div class="form-group" style="margin-top: 1rem;">
+    <button onclick="window.location.href='https://cardsarchives.github.io/Cards-Archives/privacy.html'" 
+            class="btn btn-secondary" style="width: 100%;">
+        🔒 Privacy Policy
+    </button>
+</div>
+
+                </div>
+
+                <div id="createForm" class="hidden">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+                    <div class="form-group">
+                        <input type="text" id="createAccountName" placeholder="Account Name" class="input">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="createPin" placeholder="6-digit PIN" maxlength="6" class="input">
+                    </div>
+                    <div class="form-group">
+                        <button onclick="createAccount()" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                    </div>
+                    <div class="form-group">
+                        <button onclick="hideCreateForm()" class="btn btn-secondary" style="width: 100%;">Back to Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <!-- Menu Screen -->
+<div id="menuScreen" class="hidden">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="title" style="margin: 0;">Cards Archives</h1>
+        <div class="flex gap-4">
+            <button onclick="showSettings()" class="icon-btn btn-secondary">⚙️</button>
+            <button onclick="logout()" class="icon-btn btn-danger">Logout</button>
+        </div>
+    </div>
+    
+    <div class="text-center mb-8">
+        <p style="font-size: 1.2rem;">Welcome, <span id="currentUserName"></span>!</p>
+    </div>
+    
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="menu-card" onclick="showShowcase()">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Showcase</h2>
+            <p style="color: #9CA3AF;">View and manage your card collection</p>
+        </div>
+        
+        <div class="menu-card" onclick="showHuntlist()">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Hunt List</h2>
+            <p style="color: #9CA3AF;">Track cards you want to acquire</p>
+        </div>
+    </div>
+
+    <!-- Stats & Graph Section -->
+    <div id="menuStatsSection" style="margin-top: 2rem;">
+        <div class="chart-container" style="height:200px;">
+            <canvas id="menuStatsChart"></canvas>
+        </div>
+        <div style="margin-top:1rem; font-size:1.1rem; text-align:center;">
+            <p>📈 Valeur totale : <span id="menuStatsCurrent">$0.00</span></p>
+            <p>💵 Payé : <span id="menuStatsPaid">$0.00</span></p>
+            <p>⚖️ Profit : <span id="menuStatsProfit" style="color:white;">$0.00 (0.0%)</span></p>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Settings Screen -->
+        <div id="settingsScreen" class="hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h1 style="color: rgb(0, 128, 255); font-size: 2rem; font-weight: bold;">Settings</h1>
+                <button onclick="showMenu()" class="btn btn-secondary">Back</button>
+            </div>
+            
+            <div style="max-width: 600px;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 1.1rem;">Grid Size</label>
+                    <select id="gridSizeSelect" onchange="updateGridSize()" class="input">
+                        <option value="2">2 cards per row (recommanded for smartphone)</option>
+                        <option value="3">3 cards per row</option>
+                        <option value="4">4 cards per row</option>
+                        <option value="5">5 cards per row</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <button onclick="showExportModal()" class="btn btn-primary" style="width: 100%;">
+                        📥 Export Data
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <h3 style="margin-bottom: 1rem;">Account Info</h3>
+                    <p style="color: #9CA3AF; margin-bottom: 0.5rem;">Name: <span id="accountName"></span></p>
+                    <p style="color: #9CA3AF;">Created: <span id="accountCreated"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collection Screen -->
+        <div id="collectionScreen" class="hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h1 id="collectionTitle" style="color: rgb(0, 128, 255); font-size: 2rem; font-weight: bold;">Collection</h1>
+                <div class="flex gap-4">
+                    <button onclick="showCardForm()" class="btn btn-primary">+ Add Card</button>
+                    <button onclick="showMenu()" class="btn btn-secondary">Back</button>
+                </div>
+            </div>
+            
+            <div id="cardsGrid" class="grid grid-3"></div>
+            
+            <div id="emptyState" class="text-center mt-8 hidden">
+                <p style="color: #9CA3AF; font-size: 1.2rem;">No cards yet. Add your first card!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Export Data</h2>
+            <p style="color: #9CA3AF; margin-bottom: 1rem;">Choose how to export your data:</p>
+            
+            <div class="flex gap-4 mb-4">
+                <button onclick="tryDownload()" class="btn btn-primary" style="flex: 1;">Save to File</button>
+                <button onclick="showExportText()" class="btn btn-secondary" style="flex: 1;">Show as Text</button>
+            </div>
+            
+            <div id="exportTextContainer" class="hidden">
+                <p style="color: #9CA3AF; margin-bottom: 0.5rem;">Copy this text and save it as a .json file:</p>
+                <div id="exportText" class="export-text"></div>
+                <button onclick="copyExportText()" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Copy to Clipboard</button>
+            </div>
+            
+            <div class="flex gap-4 mt-4">
+                <button onclick="hideExportModal()" class="btn btn-secondary" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Confirm Delete</h2>
+            <p style="margin-bottom: 2rem; color: #9CA3AF;">Are you sure you want to delete this card? This action cannot be undone.</p>
+            <div class="flex gap-4">
+                <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">Delete</button>
+                <button onclick="cancelDelete()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Form Modal -->
+<div id="cardModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="cardModalTitle" style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1.5rem;">Add Card</h2>
+        
+        <!-- Row 1 -->
+        <div class="form-row">
+            <input type="text" id="cardName" placeholder="Card Name" class="input">
+            <input type="text" id="cardSet" placeholder="Set" class="input">
+        </div>
+        
+        <!-- Row 2 -->
+        <div class="form-row">
+            <input type="text" id="cardNumber" placeholder="Card Number" class="input">
+            <input type="text" id="cardRarity" placeholder="Rarity" class="input">
+        </div>
+        
+        <!-- Row 3 -->
+        <div class="form-row">
+            <input type="text" id="cardCondition" placeholder="Condition" class="input">
+            <input type="url" id="cardImage" placeholder="Image URL (optional)" class="input">
+        </div>
+
+        <!-- Row 4: Price Paid -->
+        <div class="form-row">
+            <input 
+                type="number" 
+                id="cardPricePaid" 
+                placeholder="Price Paid (Optional)" 
+                class="input" 
+                step="0.01" 
+                min="0"
+                style="flex: 1;">
+        </div>
+        
+        <!-- Card Image -->
+        <div class="form-group">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 1rem; font-weight: bold;">Card Image</label>
+            <div class="flex gap-4 mb-4">
+                <button type="button" onclick="selectImageFromGallery()" class="btn btn-secondary" style="flex: 1;">
+                    📷 From Gallery
+                </button>
+                <button type="button" onclick="takePhoto()" class="btn btn-secondary" style="flex: 1;">
+                    📸 Take Photo
+                </button>
+            </div>
+        </div>
+
+        <!-- Hidden file inputs -->
+        <input type="file" id="galleryInput" accept="image/*" style="display: none;" onchange="handleImageSelect(this)">
+        <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;" onchange="handleImageSelect(this)">
+        
+        <!-- Image preview -->
+        <div id="imagePreview" class="hidden" style="margin-top: 1rem;">
+            <img id="previewImg" style="max-width: 100%; max-height: 200px; border-radius: 0.5rem; object-fit: contain; background-color: #374151;">
+            <div class="flex gap-4 mt-2">
+                <button type="button" onclick="removeImage()" class="btn btn-danger" style="flex: 1;">Remove Image</button>
+            </div>
+        </div>
+
+        <!-- Graded Card toggle -->
+        <div class="flex gap-4 mb-4" style="margin-top: 1rem;">
+            <label class="flex items-center">
+                <input type="checkbox" id="cardIsGraded" onchange="toggleGradeInput()" style="margin-right: 0.5rem;">
+                Graded Card
+            </label>
+            <input type="text" id="cardGrade" placeholder="Grade (e.g., PSA 10)" class="input hidden" style="flex: 1;">
+        </div>
+
+        <!-- Price History -->
+        <div class="mb-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 style="font-size: 1.1rem; font-weight: bold;">Price History</h3>
+                <button onclick="addPrice()" class="btn btn-primary">+ Add Price</button>
+            </div>
+            <div id="pricesContainer"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-4">
+            <button onclick="saveCard()" class="btn btn-primary" style="flex: 1;">Save Card</button>
+            <button onclick="hideCardForm()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // Global state
+        let appState = {
+            currentScreen: 'login',
+            accounts: [],
+            currentAccount: null,
+            gridSize: 3,
+            showcaseCards: [],
+            huntlistCards: [],
+            currentCollection: 'showcase',
+            editingCard: null,
+            cardPrices: [],
+            cardToDelete: null,
+            chartInstances: new Map(), // Store chart instances
+            currentImageData: null // Store current image as base64
+        };
+
+        // Utility functions that need to be defined early
+        function handleImageError(img) {
+            img.style.display = 'none';
+            // You could add a placeholder or error message here
+        }
+
+        // Initialize app
+        function init() {
+            loadData();
+            if (appState.currentAccount) {
+                showMenu();
+            }
+        }
+
+        // Data persistence - using in-memory storage instead of localStorage for compatibility
+        function saveData() {
+            const data = {
+                accounts: appState.accounts,
+                showcaseCards: appState.showcaseCards,
+                huntlistCards: appState.huntlistCards,
+                gridSize: appState.gridSize
+            };
+            try {
+                localStorage.setItem('cardsArchivesData', JSON.stringify(data));
+            } catch (error) {
+                console.log('LocalStorage not available, using memory storage');
+            }
+        }
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('cardsArchivesData');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    appState.accounts = data.accounts || [];
+                    appState.showcaseCards = data.showcaseCards || [];
+                    appState.huntlistCards = data.huntlistCards || [];
+                    appState.gridSize = data.gridSize || 3;
+                }
+            } catch (error) {
+                console.log('Error loading data:', error);
+            }
+        }
+
+        // Screen management
+        function showScreen(screenId) {
+            const screens = ['loginScreen', 'menuScreen', 'settingsScreen', 'collectionScreen'];
+            screens.forEach(screen => {
+                document.getElementById(screen).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            appState.currentScreen = screenId;
+        }
+
+        // Authentication
+        function login() {
+            const accountName = document.getElementById('loginAccountName').value.trim();
+            const pin = document.getElementById('loginPin').value;
+            
+            if (!accountName || !pin) {
+                showCustomAlert('Please enter both account name and PIN');
+                return;
+            }
+            
+            const account = appState.accounts.find(acc => 
+                acc.name === accountName && acc.pin === pin
+            );
+            
+            if (account) {
+                appState.currentAccount = account;
+                showMenu();
+                clearLoginForm();
+            } else {
+                showCustomAlert('Invalid account name or PIN');
+            }
+        }
+
+        function logout() {
+            appState.currentAccount = null;
+            // Clean up chart instances
+            appState.chartInstances.forEach(chart => chart.destroy());
+            appState.chartInstances.clear();
+            showScreen('loginScreen');
+            clearLoginForm();
+        }
+
+        function clearLoginForm() {
+            document.getElementById('loginAccountName').value = '';
+            document.getElementById('loginPin').value = '';
+        }
+
+        function showCreateForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('createForm').classList.remove('hidden');
+        }
+
+        function hideCreateForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('createForm').classList.add('hidden');
+            document.getElementById('createAccountName').value = '';
+            document.getElementById('createPin').value = '';
+        }
+
+        function createAccount() {
+            const accountName = document.getElementById('createAccountName').value.trim();
+            const pin = document.getElementById('createPin').value;
+            
+            if (!accountName) {
+                showCustomAlert('Please enter a valid account name');
+                return;
+            }
+            
+            if (pin.length !== 6) {
+                showCustomAlert('Please enter a 6-digit PIN');
+                return;
+            }
+            
+            // Check if account name already exists
+            if (appState.accounts.find(acc => acc.name === accountName)) {
+                showCustomAlert('Account name already exists');
+                return;
+            }
+            
+            const newAccount = {
+                id: Date.now(),
+                name: accountName,
+                pin: pin,
+                createdAt: new Date().toISOString()
+            };
+            
+            appState.accounts.push(newAccount);
+            appState.currentAccount = newAccount;
+            saveData();
+            hideCreateForm();
+            showMenu();
+        }
+
+        // Navigation
+function showMenu() {
+    showScreen('menuScreen');
+    if (appState.currentAccount) {
+        document.getElementById('currentUserName').textContent = appState.currentAccount.name;
+    }
+
+    updateMenuStats(); // 🔥 Ajout : met à jour les stats et le graphique
+}
+
+function updateMenuStats() {
+    const showcaseCards = appState.showcaseCards.filter(c => c.accountId === appState.currentAccount?.id);
+    const huntlistCards = appState.huntlistCards.filter(c => c.accountId === appState.currentAccount?.id);
+    const allCards = [...showcaseCards, ...huntlistCards];
+
+    let totalPaid = 0;
+    let totalCurrent = 0;
+    const valueByDate = {};
+
+    allCards.forEach(card => {
+        if (!isNaN(card.pricePaid) && card.pricePaid !== null) {
+            totalPaid += card.pricePaid;
+        }
+        if (card.prices && card.prices.length > 0) {
+            const sorted = [...card.prices].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const lastPrice = Number(sorted[sorted.length - 1].price || 0);
+            totalCurrent += lastPrice;
+
+            sorted.forEach(p => {
+                const d = new Date(p.date).toISOString().split('T')[0];
+                valueByDate[d] = (valueByDate[d] || 0) + Number(p.price || 0);
+            });
+        }
+    });
+
+    // Met à jour les textes
+    document.getElementById('menuStatsCurrent').textContent = `$${totalCurrent.toFixed(2)}`;
+    document.getElementById('menuStatsPaid').textContent = `$${totalPaid.toFixed(2)}`;
+    const diff = totalCurrent - totalPaid;
+    const diffPercent = totalPaid !== 0 ? (diff / totalPaid) * 100 : 0;
+    const profitEl = document.getElementById('menuStatsProfit');
+
+    if (diff > 0) {
+        profitEl.style.color = '#10B981'; // vert
+        profitEl.textContent = `+$${diff.toFixed(2)} (+${diffPercent.toFixed(1)}%)`;
+    } else if (diff < 0) {
+        profitEl.style.color = '#EF4444'; // rouge
+        profitEl.textContent = `-$${Math.abs(diff).toFixed(2)} (${diffPercent.toFixed(1)}%)`;
+    } else {
+        profitEl.style.color = 'white';
+        profitEl.textContent = `$0.00 (0.0%)`;
+    }
+
+    // Graphique
+    const labels = Object.keys(valueByDate).sort((a, b) => new Date(a) - new Date(b));
+    const data = labels.map(date => valueByDate[date]);
+
+    if (window.menuStatsChartInstance) {
+        window.menuStatsChartInstance.destroy();
+    }
+
+    const ctx = document.getElementById('menuStatsChart').getContext('2d');
+    window.menuStatsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Valeur totale ($)',
+                data,
+                borderColor: 'rgb(0, 128, 255)',
+                backgroundColor: 'rgba(0, 128, 255, 0.1)',
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9CA3AF' }, grid: { color: '#374151' } },
+                y: { ticks: { color: '#9CA3AF', callback: v => '$' + v }, grid: { color: '#374151' } }
+            }
+        }
+    });
+}
+
+
+        function showSettings() {
+            showScreen('settingsScreen');
+            document.getElementById('gridSizeSelect').value = appState.gridSize;
+            document.getElementById('accountName').textContent = appState.currentAccount?.name || '';
+            document.getElementById('accountCreated').textContent = 
+                appState.currentAccount ? new Date(appState.currentAccount.createdAt).toLocaleDateString() : '';
+        }
+
+        function showShowcase() {
+            appState.currentCollection = 'showcase';
+            showCollection();
+        }
+
+        function showHuntlist() {
+            appState.currentCollection = 'huntlist';
+            showCollection();
+        }
+
+        function showCollection() {
+            showScreen('collectionScreen');
+            document.getElementById('collectionTitle').textContent = 
+                appState.currentCollection === 'showcase' ? 'Showcase' : 'Hunt List';
+            renderCards();
+        }
+
+        function updateGridSize() {
+            appState.gridSize = parseInt(document.getElementById('gridSizeSelect').value);
+            saveData();
+            // Force re-render with new grid size
+            if (appState.currentScreen === 'collectionScreen') {
+                renderCards();
+            }
+        }
+
+        // Card management
+        function getCurrentCards() {
+            const cards = appState.currentCollection === 'showcase' ? 
+                appState.showcaseCards : appState.huntlistCards;
+            return cards.filter(card => card.accountId === appState.currentAccount?.id);
+        }
+
+        function renderCards() {
+            const cardsGrid = document.getElementById('cardsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const cards = getCurrentCards();
+            
+            // Clean up existing charts
+            appState.chartInstances.forEach(chart => chart.destroy());
+            appState.chartInstances.clear();
+            
+            // Update grid class based on current grid size
+            cardsGrid.className = `grid grid-${appState.gridSize}`;
+            
+            if (cards.length === 0) {
+                cardsGrid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            cardsGrid.innerHTML = cards.map(card => `
+    <div class="card" onclick="openViewModal(${card.id})">
+        ${card.image ? `<img src="${card.image}" alt="${card.name}" class="card-image" onerror="handleImageError(this)">` : ''}
+        ${renderPriceChart(card)}
+    </div>
+`).join('');
+
+            
+            // Create charts after DOM is updated
+            setTimeout(() => {
+                cards.forEach(card => {
+                    if (card.prices && card.prices.length > 0) {
+                        createPriceChart(card);
+                    }
+                });
+            }, 0);
+        }
+
+        function renderPriceChart(card) {
+    if (!card.prices || card.prices.length === 0) {
+        return '<div style="color: #9CA3AF; font-size: 0.9rem; margin-top: 1rem;">No price history</div>';
+    }
+    
+    const latestPrice = Number(card.prices[card.prices.length - 1]?.price || 0);
+    const pricePaid = (card.pricePaid !== undefined && card.pricePaid !== null) 
+        ? Number(card.pricePaid) 
+        : NaN;
+
+    let pricePaidHtml = '';
+    if (!isNaN(pricePaid)) {
+        let color = 'white';
+        let profitLossHtml = '';
+
+        const diff = latestPrice - pricePaid;
+        const diffPercent = pricePaid !== 0 ? (diff / pricePaid) * 100 : 0;
+
+        if (latestPrice > pricePaid) {
+            color = '#10B981'; // vert
+            profitLossHtml = `<div style="color: ${color}; font-size: 0.85rem;">Profit: +$${diff.toFixed(2)} (+${diffPercent.toFixed(1)}%)</div>`;
+        } else if (latestPrice < pricePaid) {
+            color = '#EF4444'; // rouge
+            profitLossHtml = `<div style="color: ${color}; font-size: 0.85rem;">Loss: -$${Math.abs(diff).toFixed(2)} (${diffPercent.toFixed(1)}%)</div>`;
+        } else {
+            color = 'white'; // identique
+            profitLossHtml = `<div style="color: ${color}; font-size: 0.85rem;">No change</div>`;
+        }
+
+        pricePaidHtml = `
+            <div style="color: ${color}; font-size: 0.9rem;">Price Paid: $${pricePaid.toFixed(2)}</div>
+            ${profitLossHtml}
+        `;
+    }
+
+    return `
+        <div style="margin-top: 1rem;">
+            <div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 0.5rem;">Price History</div>
+            <div class="chart-container">
+                <canvas id="chart-${card.id}"></canvas>
+            </div>
+            <div style="color: rgb(0, 128, 255); font-size: 0.9rem;">Current: $${latestPrice.toFixed(2)}</div>
+            ${pricePaidHtml}
+        </div>
+    `;
+}
+
+
+
+        function createPriceChart(card) {
+            const canvas = document.getElementById(`chart-${card.id}`);
+            if (!canvas || !card.prices || card.prices.length === 0) return;
+
+            const ctx = canvas.getContext('2d');
+            
+            // Sort prices by date
+            const sortedPrices = [...card.prices].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const labels = sortedPrices.map(p => new Date(p.date).toLocaleDateString());
+            const data = sortedPrices.map(p => parseFloat(p.price) || 0);
+            
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price ($)',
+                        data: data,
+                        borderColor: 'rgb(0, 128, 255)',
+                        backgroundColor: 'rgba(0, 128, 255, 0.1)',
+                        tension: 0.1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(0, 128, 255)',
+                        pointBorderColor: 'rgb(0, 128, 255)',
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: labels.length > 1,
+                            grid: {
+                                color: '#374151'
+                            },
+                            ticks: {
+                                color: '#9CA3AF',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            display: true,
+                            grid: {
+                                color: '#374151'
+                            },
+                            ticks: {
+                                color: '#9CA3AF',
+                                font: {
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+            
+            // Store chart instance for cleanup
+            appState.chartInstances.set(card.id, chart);
+        }
+
+        function showCardForm() {
+            appState.editingCard = null;
+            appState.cardPrices = [];
+            clearCardForm();
+            document.getElementById('cardModalTitle').textContent = 'Add Card';
+            document.getElementById('cardModal').classList.remove('hidden');
+        }
+
+        function hideCardForm() {
+            document.getElementById('cardModal').classList.add('hidden');
+            clearCardForm();
+        }
+
+        function clearCardForm() {
+    document.getElementById('cardName').value = '';
+    document.getElementById('cardSet').value = '';
+    document.getElementById('cardNumber').value = '';
+    document.getElementById('cardRarity').value = '';
+    document.getElementById('cardCondition').value = '';
+    document.getElementById('cardImage').value = '';
+    document.getElementById('cardIsGraded').checked = false;
+    document.getElementById('cardGrade').value = '';
+    document.getElementById('cardGrade').classList.add('hidden');
+    document.getElementById('pricesContainer').innerHTML = '';
+    document.getElementById('imagePreview').classList.add('hidden');
+    document.getElementById('previewImg').src = '';
+    document.getElementById('cardPricePaid').value = ''; // <-- ajout pour vider Price Paid
+    appState.cardPrices = [];
+    appState.currentImageData = null;
+}
+
+
+        // Image handling functions
+        function selectImageFromGallery() {
+            document.getElementById('galleryInput').click();
+        }
+
+        function takePhoto() {
+            document.getElementById('cameraInput').click();
+        }
+
+        function handleImageSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showCustomAlert('Please select a valid image file.');
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showCustomAlert('Image size should be less than 5MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Resize image if too large
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    let { width, height } = img;
+                    const maxDimension = 800;
+                    
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = (height * maxDimension) / width;
+                            width = maxDimension;
+                        } else {
+                            width = (width * maxDimension) / height;
+                            height = maxDimension;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to base64 with compression
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    // Store the image data
+                    appState.currentImageData = compressedDataUrl;
+                    
+                    // Show preview
+                    document.getElementById('previewImg').src = compressedDataUrl;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    
+                    // Clear URL input since we're using local image
+                    document.getElementById('cardImage').value = '';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Clear the input so the same file can be selected again
+            input.value = '';
+        }
+
+        function removeImage() {
+            appState.currentImageData = null;
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('previewImg').src = '';
+        }
+
+        function toggleGradeInput() {
+            const isGraded = document.getElementById('cardIsGraded').checked;
+            const gradeInput = document.getElementById('cardGrade');
+            
+            if (isGraded) {
+                gradeInput.classList.remove('hidden');
+            } else {
+                gradeInput.classList.add('hidden');
+                gradeInput.value = '';
+            }
+        }
+
+        function addPrice() {
+            const price = {
+                date: new Date().toISOString().split('T')[0],
+                price: 0
+            };
+            appState.cardPrices.push(price);
+            renderPrices();
+        }
+
+        function renderPrices() {
+            const container = document.getElementById('pricesContainer');
+            container.innerHTML = appState.cardPrices.map((price, index) => `
+                <div class="price-entry">
+                    <input type="date" value="${price.date}" onchange="updatePrice(${index}, 'date', this.value)">
+                    <input type="number" placeholder="Price" value="${price.price}" onchange="updatePrice(${index}, 'price', parseFloat(this.value) || 0)">
+                    <button onclick="removePrice(${index})" class="icon-btn btn-danger">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function updatePrice(index, field, value) {
+            appState.cardPrices[index][field] = value;
+        }
+
+        function removePrice(index) {
+            appState.cardPrices.splice(index, 1);
+            renderPrices();
+        }
+
+        function saveCard() {
+    const cardData = {
+    name: document.getElementById('cardName').value.trim(),
+    set: document.getElementById('cardSet').value.trim(),
+    number: document.getElementById('cardNumber').value.trim(),
+    rarity: document.getElementById('cardRarity').value.trim(),
+    condition: document.getElementById('cardCondition').value.trim(),
+    image: appState.currentImageData || document.getElementById('cardImage').value.trim(),
+    isGraded: document.getElementById('cardIsGraded').checked,
+    grade: document.getElementById('cardGrade').value.trim(),
+    prices: [...appState.cardPrices],
+    pricePaid: (document.getElementById('cardPricePaid').value !== '') 
+        ? parseFloat(document.getElementById('cardPricePaid').value) 
+        : null
+};
+
+
+    // ✅ Vérif globale des champs requis
+    if (!cardData.name || !cardData.set || !cardData.number || !cardData.rarity ||
+        !cardData.condition || !cardData.image) {
+        showCustomAlert('❗ Please fill in all card fields.');
+        return;
+    }
+
+    // ✅ Vérif prix
+    // ✅ On filtre les prix vides ou incomplets
+cardData.prices = cardData.prices.filter(p => p.date && p.price);
+
+// ✅ Vérif seulement si un prix est partiellement rempli
+if (appState.cardPrices.some(p => (p.date && !p.price) || (!p.date && p.price))) {
+    showCustomAlert('❗ Please complete all price fields or leave them empty.');
+    return;
+}
+
+
+    if (appState.editingCard) {
+        // Update existing card
+        const cards = appState.currentCollection === 'showcase' ? 
+            appState.showcaseCards : appState.huntlistCards;
+        const index = cards.findIndex(card => card.id === appState.editingCard.id);
+        if (index !== -1) {
+            cards[index] = { ...appState.editingCard, ...cardData };
+        }
+    } else {
+        // Add new card
+        const newCard = {
+            id: Date.now(),
+            accountId: appState.currentAccount?.id,
+            ...cardData,
+            createdAt: new Date().toISOString()
+        };
+
+        if (appState.currentCollection === 'showcase') {
+            appState.showcaseCards.push(newCard);
+        } else {
+            appState.huntlistCards.push(newCard);
+        }
+    }
+
+    saveData();
+    hideCardForm();
+    renderCards();
+}
+
+
+        
+function editCard(cardId) {
+    let card = appState.showcaseCards.find(c => c.id == cardId) || appState.huntlistCards.find(c => c.id == cardId);
+    if (!card) {
+        showCustomAlert('Card introuvable pour édition.');
+        return;
+    }
+
+    appState.currentCollection = appState.showcaseCards.includes(card) ? 'showcase' : 'huntlist';
+    appState.editingCard = card;
+    appState.cardPrices = [...(card.prices || [])];
+
+    document.getElementById('cardName').value = card.name || '';
+    document.getElementById('cardSet').value = card.set || '';
+    document.getElementById('cardNumber').value = card.number || '';
+    document.getElementById('cardRarity').value = card.rarity || '';
+    document.getElementById('cardCondition').value = card.condition || '';
+    document.getElementById('cardIsGraded').checked = card.isGraded || false;
+    document.getElementById('cardGrade').value = card.grade || '';
+    document.getElementById('cardPricePaid').value = (card.pricePaid !== undefined && card.pricePaid !== null) ? card.pricePaid : '';
+
+    if (card.image) {
+        if (card.image.startsWith('data:')) {
+            appState.currentImageData = card.image;
+            document.getElementById('previewImg').src = card.image;
+            document.getElementById('imagePreview').classList.remove('hidden');
+            document.getElementById('cardImage').value = '';
+        } else {
+            appState.currentImageData = null;
+            document.getElementById('cardImage').value = card.image;
+            document.getElementById('imagePreview').classList.add('hidden');
+        }
+    } else {
+        appState.currentImageData = null;
+        document.getElementById('cardImage').value = '';
+        document.getElementById('imagePreview').classList.add('hidden');
+    }
+
+    toggleGradeInput();
+    renderPrices();
+
+    document.getElementById('cardModalTitle').textContent = 'Edit Card';
+    document.getElementById('cardModal').classList.remove('hidden');
+}
+
+
+        function deleteCard(cardId) {
+            appState.cardToDelete = cardId;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function confirmDelete() {
+            if (appState.cardToDelete) {
+                if (appState.currentCollection === 'showcase') {
+                    appState.showcaseCards = appState.showcaseCards.filter(card => card.id !== appState.cardToDelete);
+                } else {
+                    appState.huntlistCards = appState.huntlistCards.filter(card => card.id !== appState.cardToDelete);
+                }
+                saveData();
+                renderCards();
+            }
+            cancelDelete();
+        }
+
+        function cancelDelete() {
+            appState.cardToDelete = null;
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        // Export functionality with mobile-friendly options
+        function showExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+            document.getElementById('exportTextContainer').classList.add('hidden');
+        }
+
+        function hideExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+            document.getElementById('exportTextContainer').classList.add('hidden');
+        }
+
+        function getExportData() {
+            return {
+                account: appState.currentAccount,
+                showcaseCards: appState.showcaseCards.filter(card => card.accountId === appState.currentAccount?.id),
+                huntlistCards: appState.huntlistCards.filter(card => card.accountId === appState.currentAccount?.id),
+                exportDate: new Date().toISOString()
+            };
+        }
+
+        function tryDownload() {
+            const exportData = getExportData();
+            const dataStr = JSON.stringify(exportData, null, 2);
+            
+            try {
+                // Try standard download method first
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `cards-archive-${appState.currentAccount?.name}-${new Date().toISOString().split('T')[0]}.json`;
+                
+                // Try to trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showCustomAlert('Download started! Check your downloads folder.');
+                hideExportModal();
+            } catch (error) {
+                console.log('Download failed, showing alternative options:', error);
+                showExportText();
+            }
+        }
+
+        function showExportText() {
+            const exportData = getExportData();
+            const dataStr = JSON.stringify(exportData, null, 2);
+            
+            document.getElementById('exportText').textContent = dataStr;
+            document.getElementById('exportTextContainer').classList.remove('hidden');
+        }
+
+        function copyExportText() {
+            const exportText = document.getElementById('exportText');
+            
+            try {
+                // Try modern clipboard API
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(exportText.textContent).then(() => {
+                        showCustomAlert('Data copied to clipboard! You can now paste it into a text file and save as .json');
+                    }).catch(() => {
+                        fallbackCopyText(exportText.textContent);
+                    });
+                } else {
+                    fallbackCopyText(exportText.textContent);
+                }
+            } catch (error) {
+                fallbackCopyText(exportText.textContent);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            try {
+                // Fallback method for older browsers/environments
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    showCustomAlert('Data copied to clipboard! You can now paste it into a text file and save as .json');
+                } else {
+                    showCustomAlert('Copy failed. Please manually select and copy the text above.');
+                }
+            } catch (error) {
+                showCustomAlert('Copy not supported. Please manually select and copy the text above, then save it as a .json file.');
+            }
+        }
+
+        // Data import
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let importCount = 0;
+                    
+                    // Import accounts if not logged in
+                    if (!appState.currentAccount && importedData.account) {
+                        const existingAccount = appState.accounts.find(acc => acc.name === importedData.account.name);
+                        if (!existingAccount) {
+                            appState.accounts.push(importedData.account);
+                            appState.currentAccount = importedData.account;
+                        } else {
+                            appState.currentAccount = existingAccount;
+                        }
+                    }
+                    
+                    // Import showcase cards
+                    if (importedData.showcaseCards && Array.isArray(importedData.showcaseCards)) {
+                        const updatedShowcaseCards = importedData.showcaseCards.map(card => ({
+                            ...card,
+                            id: Date.now() + Math.random(),
+                            accountId: appState.currentAccount?.id
+                        }));
+                        appState.showcaseCards = [...appState.showcaseCards, ...updatedShowcaseCards];
+                        importCount += updatedShowcaseCards.length;
+                    }
+                    
+                    // Import huntlist cards
+                    if (importedData.huntlistCards && Array.isArray(importedData.huntlistCards)) {
+                        const updatedHuntlistCards = importedData.huntlistCards.map(card => ({
+                            ...card,
+                            id: Date.now() + Math.random(),
+                            accountId: appState.currentAccount?.id
+                        }));
+                        appState.huntlistCards = [...appState.huntlistCards, ...updatedHuntlistCards];
+                        importCount += updatedHuntlistCards.length;
+                    }
+                    
+                    // Import legacy format (direct arrays)
+                    if (!importedData.showcaseCards && !importedData.huntlistCards && Array.isArray(importedData)) {
+                        const updatedCards = importedData.map(card => ({
+                            ...card,
+                            id: Date.now() + Math.random(),
+                            accountId: appState.currentAccount?.id
+                        }));
+                        appState.showcaseCards = [...appState.showcaseCards, ...updatedCards];
+                        importCount += updatedCards.length;
+                    }
+                    
+                    saveData();
+                    showCustomAlert(`Successfully imported ${importCount} cards!`);
+                    
+                    // Clear the file input
+                    document.getElementById('importFile').value = '';
+                    
+                    // If we logged in through import, show menu
+                    if (appState.currentAccount && appState.currentScreen === 'login') {
+                        showMenu();
+                    }
+                    
+                } catch (error) {
+                    showCustomAlert('Error importing data: Invalid file format. Please ensure it\'s a valid JSON file.');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Custom alert system
+        function showCustomAlert(message) {
+    const alertModal = document.createElement('div');
+    alertModal.className = 'alert-modal';  // ✅ Classe unique
+    alertModal.style.zIndex = 9999;        // ✅ Devant tout
+    alertModal.innerHTML = `
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: rgb(0, 128, 255); font-size: 1.5rem; margin-bottom: 1rem;">Notice</h2>
+            <p style="margin-bottom: 2rem; color: #9CA3AF;">${message}</p>
+            <button onclick="this.closest('.alert-modal').remove()" class="btn btn-primary" style="width: 100%;">OK</button>
+        </div>
+    `;
+    document.body.appendChild(alertModal);
+
+    setTimeout(() => {
+        if (alertModal.parentNode) {
+            alertModal.remove();
+        }
+    }, 10000);
+}
+
+
+
+
+        let viewCardData = null; // stocke la carte affichée
+
+
+
+function openViewModal(cardId) {
+    const cards = getCurrentCards();
+    const card = cards.find(c => c.id == cardId);
+    if (!card) return;
+
+    viewCardData = card;
+
+    document.getElementById('viewCardImage').src = card.image || '';
+    document.getElementById('viewCardName').textContent = card.name || '';
+    document.getElementById('viewCardSet').textContent = (card.set || '') + (card.number ? ' #' + card.number : '');
+    document.getElementById('viewCardDetails').textContent = (card.rarity || '') + ' - ' + (card.condition || '');
+    document.getElementById('viewCardGrade').textContent = card.isGraded ? 'Graded: ' + card.grade : '';
+
+    const chartContainer = document.querySelector('#viewCardModal .chart-container');
+    const canvas = document.getElementById('viewCardChart');
+    const ctx = canvas.getContext('2d');
+
+    // Destroy previous chart instance if exists
+    if (window.viewChartInstance) {
+        try { window.viewChartInstance.destroy(); } catch (e) { /* ignore */ }
+        window.viewChartInstance = null;
+    }
+
+    // Remove existing "no price" message if present
+    const existingMsg = document.getElementById('viewNoPriceMsg');
+    if (existingMsg) existingMsg.remove();
+
+    if (card.prices && card.prices.length > 0) {
+        // Ensure chart container / canvas visible
+        if (chartContainer) chartContainer.style.display = '';
+        canvas.style.display = '';
+        canvas.style.pointerEvents = '';
+
+        const sortedPrices = [...card.prices].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const labels = sortedPrices.map(p => new Date(p.date).toLocaleDateString());
+        const data = sortedPrices.map(p => parseFloat(p.price) || 0);
+
+        window.viewChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Price ($)',
+                    data: data,
+                    borderColor: 'rgb(0, 128, 255)',
+                    backgroundColor: 'rgba(0, 128, 255, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', font: { size: 10 } } },
+                    y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', font: { size: 10 }, callback: value => '$' + value } }
+                }
+            }
+        });
+    } else {
+        // Hide the chart container so the invisible canvas won't intercept clicks
+        if (chartContainer) chartContainer.style.display = 'none';
+        canvas.style.display = 'none';
+        canvas.style.pointerEvents = 'none';
+
+        // Insert a "No price history" message right above the buttons
+        const modalContent = document.querySelector('#viewCardModal .view-modal-content');
+        if (modalContent) {
+            const msg = document.createElement('div');
+            msg.id = 'viewNoPriceMsg';
+            msg.style.color = '#9CA3AF';
+            msg.style.fontSize = '0.95rem';
+            msg.style.marginTop = '0.5rem';
+            msg.textContent = 'No price history';
+            // Place it before the buttons container
+            const buttonsContainer = modalContent.querySelector('.flex.gap-4');
+            if (buttonsContainer) {
+                buttonsContainer.parentNode.insertBefore(msg, buttonsContainer);
+            } else {
+                modalContent.appendChild(msg);
+            }
+        }
+    }
+
+    // Always attach handlers (so they exist even when there is no chart)
+    const editBtn = document.getElementById('viewEditBtn');
+    const deleteBtn = document.getElementById('viewDeleteBtn');
+
+    if (editBtn) {
+        editBtn.onclick = function (e) {
+            e.stopPropagation();
+            closeViewModal();
+            editCard(card.id);
+        };
+    }
+    if (deleteBtn) {
+        deleteBtn.onclick = function (e) {
+            e.stopPropagation();
+            closeViewModal();
+            deleteCard(card.id);
+        };
+    }
+
+    document.getElementById('viewCardModal').classList.remove('hidden');
+}
+
+
+
+function closeViewModal() {
+    document.getElementById('viewCardModal').classList.add('hidden');
+
+    if (window.viewChartInstance) {
+        window.viewChartInstance.destroy();
+        window.viewChartInstance = null;
+    }
+
+    // Nettoyage état et handlers
+    viewCardData = null;
+    const editBtn = document.getElementById('viewEditBtn');
+    const deleteBtn = document.getElementById('viewDeleteBtn');
+    if (editBtn) editBtn.onclick = null;
+    if (deleteBtn) deleteBtn.onclick = null;
+}
+
+
+        // Initialize app on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+	<!-- View Card Modal -->
+<div id="viewCardModal" class="view-modal hidden" onclick="closeViewModal()">
+  <div class="view-modal-content" onclick="event.stopPropagation()">
+    <img id="viewCardImage" src="" alt="Card Image">
+    <h2 id="viewCardName" style="font-size: 1.5rem; color: rgb(0, 128, 255); margin-bottom: 0.5rem;"></h2>
+    <p id="viewCardSet" class="card-info"></p>
+    <p id="viewCardDetails" class="card-info"></p>
+    <p id="viewCardGrade" class="card-info" style="color: #FCD34D;"></p>
+    <div class="chart-container" style="margin-top: 1rem;">
+      <canvas id="viewCardChart"></canvas>
+	</div>
+    <div class="flex gap-4" style="margin-top: 1rem;">
+	<button id="viewEditBtn" class="btn btn-primary" style="flex:1;">✏️ Edit</button>
+	<button id="viewDeleteBtn" class="btn btn-danger" style="flex:1;">🗑️ Delete</button>
+	</div>
+
+    <button onclick="closeViewModal()" class="btn btn-secondary" style="width:100%; margin-top:1rem;">Close</button>
+  </div>
+</div>
+
+</body>
+</html>
